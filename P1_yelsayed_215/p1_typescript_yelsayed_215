@@ -1,0 +1,968 @@
+Script started on 2022-10-10 19:30:43-04:00
+bash-4.4$ uname -a
+Linux zeus-2.cec.gmu.edu 4.18.0-348.23.1.el8_5.x86_64 #1 SMP Tue Apr 12 11:20:32 EDT 2022 x86_64 x86_64 x86_64 GNU/Linux
+bash-4.4$ ls
+inptut.txt  Makefile  p1_typescript_yelsayed_215  P1_yelsayed_215  P1_yelsayed_215.c
+bash-4.4$ cat P1_yelsayed_215.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+
+
+
+int is_valid_name(char name[]){
+    int p = 0,i =0;
+    int k = strlen(name);
+    if(k > 7) return 0;
+    for(i; i < k; i++){
+        if((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z')) continue;
+        else
+            p++;
+    }
+    if(p != 0) return 0;
+    else return 1;
+
+}
+
+
+
+int is_valid_seed(char k[]){
+
+        int p = 0,seed;
+        char u[20];
+        seed = atoi(k);
+        sprintf(u,"%d",seed);
+
+        if((seed >=1) && (seed <= 99999) && (strlen(u) == strlen(k))) p++;
+       return p;
+}
+
+
+
+
+int calculate_net_height(int ft,int in){
+    ft *= 12;
+    ft += in;
+    return ft;
+}
+
+int make_bet(){
+    char k[10];
+    int bet;
+    printf("Enter a bet [1-11]:\n");
+    fgets(k,10,stdin);
+    sscanf(k,"%d",&bet);
+    while(bet < 1 || bet > 11){
+        printf("Not valid Bet re-enter:\n");
+        fgets(k,10,stdin);
+        sscanf(k,"%d",&bet);
+    }
+    return bet;
+}
+
+
+int game_logic(int score, int netHight, char name[],int rpoints){
+        char c,k[10];
+        int bet;
+
+        int ballHight = 0;
+        int c_ball = 0;
+
+
+        while(rpoints > 0 && score > 0){
+        ballHight = throw_ball(netHight);
+        c_ball = throw_ball(netHight);
+        bet = make_bet();
+        
+        if(ballHight > netHight){
+
+            printf("Ball height: %d inches, the ball is over the net\n",ballHight);
+            score -= bet;
+            printf("Deducting %d points\n",bet);
+            printf("%s now has %d points\n",name,score);
+        }
+        else if((ballHight <= netHight) && (ballHight > (netHight / 2))){
+            printf("Bet %d points\n", bet);
+            score += 2;
+            printf("Ball height: %d inches, ball is below the net\n",ballHight);
+            printf("Deducting 2 points\n");
+            printf("%s now has %d points\n",name,score);
+        }
+
+        else if(ballHight < (netHight / 2)){
+            printf("Ball hight: %d, Throw again? Type Y or N:\n",ballHight);
+            fgets(k,10,stdin);
+            sscanf(k,"%c",&c);
+                if(c == 'Y' || c == 'y'){
+                    ballHight = throw_ball(netHight);
+                    if(ballHight > netHight) {
+                    score -= 4;
+                    printf("Ball height: %d inches, the ball is below the net\n",ballHight);
+                    printf("subtracting 4\n");
+                    printf("%s now has %d points\n",name,score);
+                    }
+                }
+                    else{
+                        score += bet;
+  			            printf("Adding %d to score\n",bet);
+                        printf("%s now has %d points\n",name,score);
+                        }
+        }
+            /* computer */
+
+            printf("Computer Turn\n");
+        if(c_ball > netHight){
+            printf("Ball height: %d inches, the ball is over the net\n",c_ball);
+            rpoints -= 9;
+            printf("Deducting 9 pints\n");
+            printf("computer now has %d points\n",rpoints);
+        }
+        else if((c_ball <= netHight) && (c_ball > (netHight / 2))){
+
+            rpoints += 4;
+            printf("Ball height: %d inches, ball is below the net\n",c_ball);
+            printf("adding 4 points to computer\n");
+            printf("computer now has %d points\n",rpoints);
+        }
+        else if(c_ball < (netHight / 2)){
+                    c_ball = throw_ball(netHight);
+                    if(c_ball > netHight) {
+                    rpoints -= 7;
+                    printf("Ball height: %d inches, the ball is below the net\n",c_ball);
+                    printf("subtracting 7 points\n");
+                    printf("computer now has %d points\n",rpoints);
+                    }
+                
+                    else{
+                        printf("Ball height: %d inches,the ball is below the net\n",c_ball);
+                        rpoints += 6;
+  			            printf("Adding 6 to score\n");
+  			            printf("Computer now has %d points\n",rpoints);	
+                        	
+                        
+                        }
+
+        }
+
+        }
+        
+        if(rpoints <= 0){return 1;}
+        return 0;
+}
+
+
+/*
+ * The above function is ment to implement the logic
+ * 1 we have to gather the needed info as Parms
+ * 2 we need score, bet, net hight, ball thrown hight
+ * 3 we change the score based upon the throw and bet
+ * 4 if ball hight at net or lower +2 to socre
+ * 5 if ball hight is less than 1/2 then they have option to re-throw, but if they miss again it's +4 to score. if they say NO to re-throw then it's (score += bet)
+ *
+ */
+
+int throw_ball(int net)
+{
+	int thrown;
+	net += 16;
+    
+	thrown = rand() % (net + 1);
+	return thrown;
+
+}
+
+
+
+
+/*
+ *  The above function needs a way to throw the ball 
+ *  1 we know that it need to be in [0, net_height + 16]
+ *  2 we can have the parameter be the net hight 
+ *  3 we need to use the rand() function to throw
+ *  4 we return how hight the ball went
+ *  5 in main we check if it went over 
+ */
+
+
+
+
+
+
+
+
+int main(){
+        int n,v,count = 5,net,ft,in,hpoints = 75,rpoints = 75,games = 3,H_won = 0,C_won = 0,res;
+        char name[15],gname[15];
+        char k[20],jim[20],kin[20];
+	    char f,t,i,N,y;
+	    printf("Welcome to the Gehntoo game\n");
+        printf("Enter Your Name\n");        
+        fgets(gname,15,stdin);
+        sscanf(gname,"%s",name);
+ 
+
+
+        n = is_valid_name(name);
+        while(n != 1){
+                printf("Name is Not Valid\n");
+                fgets(gname,15,stdin);
+                sscanf(gname,"%s",name);
+                n = is_valid_name(name);
+        }
+
+
+
+        printf("Enter a seed value to use in the range of [1-99999]\n");
+        fgets(jim,20,stdin);
+        sscanf(jim, "%s",kin);
+
+
+        v = is_valid_seed(kin);
+        while(v != 1){
+                printf("re-enter seed\n");
+                fgets(jim,20,stdin);
+                sscanf(jim, "%s",kin);
+                v = is_valid_seed(kin);
+        } /* makes user re - enter val if not valid ("1") */
+
+        v = atoi(kin);
+        srand(v);
+
+
+
+        printf("Enter the height of the net in feet and inches [xxft xxin] where xx must be [1-99]\n");
+        while(count != 0){  /* beging of loop for hight */
+        count = 5;
+        fgets(k,20,stdin);
+        sscanf(k,"%d %c %c %d %c %c",&ft,&f,&t,&in,&i,&N);
+
+        if(ft < 99 || in < 99) count--;
+        if(f == 'F' || f == 'f') count--;
+        if(t == 'T' || t == 't') count--;
+        if(i == 'I' || i == 'i') count--;
+        if(N == 'N' || N == 'n') count--;
+        if(count != 0) printf("Hight not valid Please re-enter\n");
+
+        } /* end of while loop for geting height */
+	
+	y = 'y';
+	while((y != 'n' || y != 'N') && (games > 0)){
+        net = calculate_net_height(ft,in);
+        
+	    res = game_logic(hpoints,net,name,rpoints);
+
+
+        if(res == 1) {
+            C_won++;
+            printf("Comupter Won this Round\n");
+        }
+        else{ 
+            H_won++;
+            printf("%s Won this Round\n",name);
+        }
+        printf("%s has %d wins and Computer has %d wins\n",name,H_won,C_won);
+        games--;
+
+
+        if(games != 0){
+        printf("Would You Like To Play Again ['Y']:\n");
+        fgets(k, 20,stdin);
+        sscanf(k,"%c",&y);
+        }
+        else {printf("The Game is Over\n");
+        printf("The Computer won %d times\n",C_won);
+        printf("%s has won %d times\n",name,H_won);  
+        }
+
+	}
+        return 0;
+}
+
+bash-4.4$ cat Makefile
+# Yousef ELsayed G01259710
+# Lab 5: section 215
+# Lab5: makefile
+
+
+
+CC = gcc
+CFLAGS = -g -Wall -std=c89 -pedantic-errors
+TARGET = P1_yelsayed_215
+LIB = -lm
+
+
+
+$(TARGET):$(TARGET).c
+	$(CC) $(TARGET).c -o $(TARGET) $(CFLAGS)
+
+
+
+clear:
+	rm $(TARGET)
+bash-4.4$ make clear
+rm P1_yelsayed_215
+bash-4.4$ make
+gcc P1_yelsayed_215.c -o P1_yelsayed_215 -g -Wall -std=c89 -pedantic-errors
+[01m[KP1_yelsayed_215.c:[m[K In function ‘[01m[Kis_valid_name[m[K’:
+[01m[KP1_yelsayed_215.c:13:5:[m[K [01;35m[Kwarning: [m[Kstatement with no effect [[01;35m[K-Wunused-value[m[K]
+     [01;35m[Kfor[m[K(i; i < k; i++){
+     [01;35m[K^~~[m[K
+[01m[KP1_yelsayed_215.c:[m[K In function ‘[01m[Kgame_logic[m[K’:
+[01m[KP1_yelsayed_215.c:69:21:[m[K [01;35m[Kwarning: [m[Kimplicit declaration of function ‘[01m[Kthrow_ball[m[K’ [[01;35m[K-Wimplicit-function-declaration[m[K]
+         ballHight = [01;35m[Kthrow_ball[m[K(netHight);
+                     [01;35m[K^~~~~~~~~~[m[K
+bash-4.4$ ./P1_yelsayed_215 
+Welcome to the Gehntoo game
+Enter Your Name
+Ycw3232
+Name is Not Valid
+U^HY    Yousef
+Enter a seed value to use in the range of [1-99999]
+23jnj
+re-enter seed
+12563
+Enter the height of the net in feet and inches [xxft xxin] where xx must be [1-99]
+3ft 3  in  n
+Enter a bet [1-11]:
+11
+Ball height: 53 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 64 points
+Computer Turn
+Ball height: 25 inches,the ball is below the net
+Adding 6 to score
+Computer now has 81 points
+Enter a bet [1-11]:
+11
+Ball height: 48 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 53 points
+Computer Turn
+Ball height: 10 inches,the ball is below the net
+Adding 6 to score
+Computer now has 87 points
+Enter a bet [1-11]:
+11
+Ball hight: 5, Throw again? Type Y or N:
+y Y
+Ball height: 47 inches, the ball is below the net
+subtracting 4
+Yousef now has 49 points
+Computer Turn
+Ball height: 18 inches,the ball is below the net
+Adding 6 to score
+Computer now has 93 points
+Enter a bet [1-11]:
+11
+Ball height: 42 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 38 points
+Computer Turn
+Ball height: 21 inches, ball is below the net
+adding 4 points to computer
+computer now has 97 points
+Enter a bet [1-11]:
+11
+Ball hight: 12, Throw again? Type Y or N:
+y
+Computer Turn
+Ball height: 20 inches, ball is below the net
+adding 4 points to computer
+computer now has 101 points
+Enter a bet [1-11]:
+11
+Ball height: 40 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 27 points
+Computer Turn
+Enter a bet [1-11]:
+11
+Ball hight: 18, Throw again? Type Y or N:
+y
+Computer Turn
+Ball height: 50 inches, the ball is below the net
+subtracting 7 points
+computer now has 94 points
+Enter a bet [1-11]:
+11
+Ball hight: 17, Throw again? Type Y or N:
+Y
+Ball height: 51 inches, the ball is below the net
+subtracting 4
+Yousef now has 23 points
+Computer Turn
+Enter a bet [1-11]:
+11
+Ball hight: 7, Throw again? Type Y or N:
+Y11  
+Computer Turn
+Ball height: 10 inches,the ball is below the net
+Adding 6 to score
+Computer now has 100 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 35 inches, ball is below the net
+Deducting 2 points
+Yousef now has 25 points
+Computer Turn
+Ball height: 9 inches,the ball is below the net
+Adding 6 to score
+Computer now has 106 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 32 inches, ball is below the net
+Deducting 2 points
+Yousef now has 27 points
+Computer Turn
+Ball height: 22 inches, ball is below the net
+adding 4 points to computer
+computer now has 110 points
+Enter a bet [1-11]:
+11
+Ball hight: 18, Throw again? Type Y or N:
+Y
+Computer Turn
+Ball height: 13 inches,the ball is below the net
+Adding 6 to score
+Computer now has 116 points
+Enter a bet [1-11]:
+11
+Ball height: 53 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 16 points
+Computer Turn
+Ball height: 22 inches, ball is below the net
+adding 4 points to computer
+computer now has 120 points
+Enter a bet [1-11]:
+11
+Ball height: 44 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 5 points
+Computer Turn
+Ball height: 55 inches, the ball is over the net
+Deducting 9 pints
+computer now has 111 points
+Enter a bet [1-11]:
+11
+Ball height: 49 inches, the ball is over the net
+Deducting 11 points
+Yousef now has -6 points
+Computer Turn
+Ball height: 12 inches,the ball is below the net
+Adding 6 to score
+Computer now has 117 points
+Yousef Won this Round
+Yousef has 1 wins and Computer has 0 wins
+Would You Like To Play Again ['Y']:
+Y
+Enter a bet [1-11]:
+11
+Ball height: 53 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 64 points
+Computer Turn
+Ball height: 36 inches,the ball is below the net
+Adding 6 to score
+Computer now has 81 points
+Enter a bet [1-11]:
+11
+Ball hight: 16, Throw again? Type Y or N:
+Y
+Ball height: 51 inches, the ball is below the net
+subtracting 4
+Yousef now has 60 points
+Computer Turn
+Ball height: 29 inches,the ball is below the net
+Adding 6 to score
+Computer now has 87 points
+Enter a bet [1-11]:
+11
+Ball hight: 10, Throw again? Type Y or N:
+11
+Adding 11 to score
+Yousef now has 71 points
+Computer Turn
+Ball height: 49 inches, the ball is below the net
+subtracting 7 points
+computer now has 80 points
+Enter a bet [1-11]:
+11
+Ball height: 46 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 60 points
+Computer Turn
+Ball height: 7 inches,the ball is below the net
+Adding 6 to score
+Computer now has 86 points
+Enter a bet [1-11]:
+11
+Ball height: 40 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 49 points
+Computer Turn
+Ball height: 55 inches, the ball is over the net
+Deducting 9 pints
+computer now has 77 points
+Enter a bet [1-11]:
+11
+Ball height: 42 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 38 points
+Computer Turn
+Ball height: 47 inches, the ball is over the net
+Deducting 9 pints
+computer now has 68 points
+Enter a bet [1-11]:
+11
+Ball height: 48 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 27 points
+Computer Turn
+Ball height: 53 inches, the ball is below the net
+subtracting 7 points
+computer now has 61 points
+Enter a bet [1-11]:
+11
+Ball hight: 11, Throw again? Type Y or N:
+y
+Computer Turn
+Ball height: 51 inches, the ball is over the net
+Deducting 9 pints
+computer now has 52 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 24 inches, ball is below the net
+Deducting 2 points
+Yousef now has 29 points
+Computer Turn
+Ball height: 49 inches, the ball is over the net
+Deducting 9 pints
+computer now has 43 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 39 inches, ball is below the net
+Deducting 2 points
+Yousef now has 31 points
+Computer Turn
+Ball height: 32 inches,the ball is below the net
+Adding 6 to score
+Computer now has 49 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 32 inches, ball is below the net
+Deducting 2 points
+Yousef now has 33 points
+Computer Turn
+Ball height: 44 inches, the ball is below the net
+subtracting 7 points
+computer now has 42 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 29 inches, ball is below the net
+Deducting 2 points
+Yousef now has 35 points
+Computer Turn
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 24 inches, ball is below the net
+Deducting 2 points
+Yousef now has 37 points
+Computer Turn
+Ball height: 30 inches, ball is below the net
+adding 4 points to computer
+computer now has 46 points
+Enter a bet [1-11]:
+11
+Computer Turn
+Ball height: 3 inches,the ball is below the net
+Adding 6 to score
+Computer now has 52 points
+Enter a bet [1-11]:
+11
+Ball hight: 14, Throw again? Type Y or N:
+y
+Ball height: 52 inches, the ball is below the net
+subtracting 4
+Yousef now has 33 points
+Computer Turn
+Ball height: 4 inches,the ball is below the net
+Adding 6 to score
+Computer now has 58 points
+Enter a bet [1-11]:
+11
+Ball hight: 5, Throw again? Type Y or N:
+y
+Ball height: 44 inches, the ball is below the net
+subtracting 4
+Yousef now has 29 points
+Computer Turn
+Ball height: 43 inches, the ball is over the net
+Deducting 9 pints
+computer now has 49 points
+Enter a bet [1-11]:
+11
+Ball hight: 4, Throw again? Type Y or N:
+y
+Computer Turn
+Ball height: 53 inches, the ball is below the net
+subtracting 7 points
+computer now has 42 points
+Enter a bet [1-11]:
+11
+Ball hight: 17, Throw again? Type Y or N:
+y
+Ball height: 48 inches, the ball is below the net
+subtracting 4
+Yousef now has 25 points
+Computer Turn
+Ball height: 52 inches, the ball is below the net
+subtracting 7 points
+computer now has 35 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 33 inches, ball is below the net
+Deducting 2 points
+Yousef now has 27 points
+Computer Turn
+Ball height: 45 inches, the ball is below the net
+subtracting 7 points
+computer now has 28 points
+Enter a bet [1-11]:
+11
+Ball hight: 16, Throw again? Type Y or N:
+y
+Computer Turn
+Ball height: 32 inches,the ball is below the net
+Adding 6 to score
+Computer now has 34 points
+Enter a bet [1-11]:
+11
+Ball hight: 17, Throw again? Type Y or N:
+11  y
+Ball height: 46 inches, the ball is below the net
+subtracting 4
+Yousef now has 23 points
+Computer Turn
+Ball height: 50 inches, the ball is over the net
+Deducting 9 pints
+computer now has 25 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 20 inches, ball is below the net
+Deducting 2 points
+Yousef now has 25 points
+Computer Turn
+Ball height: 20 inches,the ball is below the net
+Adding 6 to score
+Computer now has 31 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 39 inches, ball is below the net
+Deducting 2 points
+Yousef now has 27 points
+Computer Turn
+Ball height: 7 inches,the ball is below the net
+Adding 6 to score
+Computer now has 37 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 37 inches, ball is below the net
+Deducting 2 points
+Yousef now has 29 points
+Computer Turn
+Ball height: 44 inches, the ball is below the net
+subtracting 7 points
+computer now has 30 points
+Enter a bet [1-11]:
+11
+Ball height: 41 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 18 points
+Computer Turn
+Ball height: 15 inches,the ball is below the net
+Adding 6 to score
+Computer now has 36 points
+Enter a bet [1-11]:
+11
+Ball hight: 13, Throw again? Type Y or N:
+y
+Computer Turn
+Ball height: 33 inches,the ball is below the net
+Adding 6 to score
+Computer now has 42 points
+Enter a bet [1-11]:
+11
+Ball height: 55 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 7 points
+Computer Turn
+Ball height: 30 inches, ball is below the net
+adding 4 points to computer
+computer now has 46 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 34 inches, ball is below the net
+Deducting 2 points
+Yousef now has 9 points
+Computer Turn
+Ball height: 47 inches, the ball is over the net
+Deducting 9 pints
+computer now has 37 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 27 inches, ball is below the net
+Deducting 2 points
+Yousef now has 11 points
+Computer Turn
+Ball height: 47 inches, the ball is below the net
+subtracting 7 points
+computer now has 30 points
+Enter a bet [1-11]:
+11
+Ball hight: 0, Throw again? Type Y or N:
+y
+Computer Turn
+Ball height: 6 inches,the ball is below the net
+Adding 6 to score
+Computer now has 36 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 28 inches, ball is below the net
+Deducting 2 points
+Yousef now has 13 points
+Computer Turn
+Ball height: 1 inches,the ball is below the net
+Adding 6 to score
+Computer now has 42 points
+Enter a bet [1-11]:
+11
+Ball hight: 18, Throw again? Type Y or N:
+y
+Ball height: 44 inches, the ball is below the net
+subtracting 4
+Yousef now has 9 points
+Computer Turn
+Ball height: 24 inches, ball is below the net
+adding 4 points to computer
+computer now has 46 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 22 inches, ball is below the net
+Deducting 2 points
+Yousef now has 11 points
+Computer Turn
+Ball height: 47 inches, the ball is over the net
+Deducting 9 pints
+computer now has 37 points
+Enter a bet [1-11]:
+11
+Ball height: 51 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 0 points
+Computer Turn
+Ball height: 29 inches,the ball is below the net
+Adding 6 to score
+Computer now has 43 points
+Yousef Won this Round
+Yousef has 2 wins and Computer has 0 wins
+Would You Like To Play Again ['Y']:
+Y
+Enter a bet [1-11]:
+qq
+Not valid Bet re-enter:
+11
+Ball height: 43 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 64 points
+Computer Turn
+Ball height: 42 inches, the ball is over the net
+Deducting 9 pints
+computer now has 66 points
+Enter a bet [1-11]:
+11
+Ball height: 54 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 53 points
+Computer Turn
+Ball height: 1 inches,the ball is below the net
+Adding 6 to score
+Computer now has 72 points
+Enter a bet [1-11]:
+11
+Ball hight: 12, Throw again? Type Y or N:
+Y
+Computer Turn
+Ball height: 29 inches,the ball is below the net
+Adding 6 to score
+Computer now has 78 points
+Enter a bet [1-11]:
+11
+Ball height: 41 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 42 points
+Computer Turn
+Ball height: 7 inches,the ball is below the net
+Adding 6 to score
+Computer now has 84 points
+Enter a bet [1-11]:
+11
+Ball hight: 16, Throw again? Type Y or N:
+Y
+Computer Turn
+Ball height: 32 inches, ball is below the net
+adding 4 points to computer
+computer now has 88 points
+Enter a bet [1-11]:
+11
+Ball hight: 7, Throw again? Type Y or N:
+y
+Ball height: 54 inches, the ball is below the net
+subtracting 4
+Yousef now has 38 points
+Computer Turn
+Ball height: 50 inches, the ball is below the net
+subtracting 7 points
+computer now has 81 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 23 inches, ball is below the net
+Deducting 2 points
+Yousef now has 40 points
+Computer Turn
+Ball height: 27 inches, ball is below the net
+adding 4 points to computer
+computer now has 85 points
+Enter a bet [1-11]:
+11
+Ball height: 54 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 29 points
+Computer Turn
+Ball height: 24 inches, ball is below the net
+adding 4 points to computer
+computer now has 89 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 29 inches, ball is below the net
+Deducting 2 points
+Yousef now has 31 points
+Computer Turn
+Ball height: 22 inches, ball is below the net
+adding 4 points to computer
+computer now has 93 points
+Enter a bet [1-11]:
+11
+Ball hight: 12, Throw again? Type Y or N:
+y
+Computer Turn
+Ball height: 36 inches, ball is below the net
+adding 4 points to computer
+computer now has 97 points
+Enter a bet [1-11]:
+11
+Ball height: 47 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 20 points
+Computer Turn
+Ball height: 50 inches, the ball is over the net
+Deducting 9 pints
+computer now has 88 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 27 inches, ball is below the net
+Deducting 2 points
+Yousef now has 22 points
+Computer Turn
+Ball height: 34 inches, ball is below the net
+adding 4 points to computer
+computer now has 92 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 36 inches, ball is below the net
+Deducting 2 points
+Yousef now has 24 points
+Computer Turn
+Ball height: 25 inches, ball is below the net
+adding 4 points to computer
+computer now has 96 points
+Enter a bet [1-11]:
+11
+Computer Turn
+Ball height: 37 inches, ball is below the net
+adding 4 points to computer
+computer now has 100 points
+Enter a bet [1-11]:
+11
+Bet 11 points
+Ball height: 37 inches, ball is below the net
+Deducting 2 points
+Yousef now has 26 points
+Computer Turn
+Ball height: 52 inches, the ball is below the net
+subtracting 7 points
+computer now has 93 points
+Enter a bet [1-11]:
+11
+Ball height: 50 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 15 points
+Computer Turn
+Ball height: 47 inches, the ball is over the net
+Deducting 9 pints
+computer now has 84 points
+Enter a bet [1-11]:
+11
+Ball hight: 2, Throw again? Type Y or N:
+y
+Computer Turn
+Ball height: 18 inches,the ball is below the net
+Adding 6 to score
+Computer now has 90 points
+Enter a bet [1-11]:
+11
+Ball height: 44 inches, the ball is over the net
+Deducting 11 points
+Yousef now has 4 points
+Computer Turn
+Ball height: 35 inches,the ball is below the net
+Adding 6 to score
+Computer now has 96 points
+Enter a bet [1-11]:
+11
+Ball height: 42 inches, the ball is over the net
+Deducting 11 points
+Yousef now has -7 points
+Computer Turn
+Ball height: 49 inches, the ball is over the net
+Deducting 9 pints
+computer now has 87 points
+Yousef Won this Round
+Yousef has 3 wins and Computer has 0 wins
+The Game is Over
+The Computer won 0 times
+Yousef has won 3 times
+bash-4.4$ exit
+
+Script done on 2022-10-10 19:35:38-04:00
